@@ -38,6 +38,14 @@ export default function Home({ totalPluses }: { totalPluses: number }) {
           <a href="https://alexrabin.com" target={"_blank"}>
             Alex Rabin
           </a>
+          . The Code for this project is{" "}
+          <a
+            href="https://github.com/alexrabin/supabase-discussion-tracker"
+            target={"_blank"}
+          >
+            here
+          </a>
+          .
         </p>
       </main>
     </div>
