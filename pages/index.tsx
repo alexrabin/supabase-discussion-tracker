@@ -4,7 +4,13 @@ import Discussion from "../models/Discussion";
 import getAllIndexes from "../utils/getAllIndexes";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-export default function Home({ totalPluses }: { totalPluses: number }) {
+export default function Home({
+  totalPluses,
+  error,
+}: {
+  totalPluses?: number;
+  error?: any;
+}) {
   return (
     <div className={styles.container}>
       <Head>
@@ -26,13 +32,30 @@ export default function Home({ totalPluses }: { totalPluses: number }) {
           </a>
         </h1>
 
-        <p className={styles.description}>
-          Here are the total number of upvotes, github users have commented
-          together on:{" "}
-          <code className={styles.code}>
-            {totalPluses.toLocaleString(undefined, {})}
-          </code>
-        </p>
+        {totalPluses ? (
+          <p className={styles.description}>
+            Here are the total number of upvotes github users have commented
+            together on for this discussion:{" "}
+            <code className={styles.code}>
+              {totalPluses.toLocaleString(undefined, {})}
+            </code>
+          </p>
+        ) : (
+          <p className={styles.description}>
+            Looks like something went wrong. Submit an issue{" "}
+            <a
+              href="https://github.com/alexrabin/supabase-discussion-tracker/issues"
+              target={"_blank"}
+            >
+              here
+            </a>
+            {error && (
+              <code className={styles.code}>
+                Error: {JSON.stringify(error, null, 2)}
+              </code>
+            )}
+          </p>
+        )}
         <p className={styles.description}>
           Created by{" "}
           <a href="https://alexrabin.com" target={"_blank"}>
@@ -92,7 +115,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     (a) => a.node.body
   );
   let totalPluses = 0;
-  let error;
+  let error = null;
   try {
     for (let index = 0; index < comments.length; index++) {
       const element = comments[index];
@@ -115,6 +138,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
   return {
     props: {
+      error,
       totalPluses,
     },
   };
