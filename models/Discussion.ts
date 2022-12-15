@@ -9,10 +9,16 @@ interface Edge {
 }
 
 interface Node {
-  node: Comment;
+  node: NodeData;
 }
 
-interface Comment {
+interface Author {
+  login: string;
+  url: string;
+}
+
+export interface NodeData {
   body: string;
+  author: Author;
 }
 export default Discussion;

@@ -1,16 +1,33 @@
 import { graphql } from "@octokit/graphql";
 import { GetServerSideProps } from "next";
-import Discussion from "../models/Discussion";
-import getAllIndexes from "../utils/getAllIndexes";
+import Discussion, { NodeData } from "models/Discussion";
+import getAllIndexes from "utils/getAllIndexes";
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import styles from "styles/Home.module.css";
+import React, { useCallback, useMemo, useState } from "react";
 export default function Home({
   totalPluses,
+  commentsData,
   error,
 }: {
   totalPluses?: number;
+  commentsData?: NodeData[];
   error?: any;
 }) {
+  const [showPanel, setShowPanel] = useState(false);
+  const value = useMemo(() => {
+    if (!totalPluses) {
+      return "";
+    }
+    if (totalPluses > 1000000000) {
+      return totalPluses.toExponential(4);
+    }
+    return totalPluses.toLocaleString(undefined, {});
+  }, []);
+
+  const togglePanel = useCallback(() => {
+    setShowPanel((prev) => !prev);
+  }, []);
   return (
     <div className={styles.container}>
       <Head>
@@ -33,13 +50,47 @@ export default function Home({
         </h1>
 
         {totalPluses ? (
-          <p className={styles.description}>
-            Here are the total number of upvotes github users have commented
-            together on for this discussion:{" "}
-            <code className={styles.code}>
-              {totalPluses.toLocaleString(undefined, {})}
-            </code>
-          </p>
+          <>
+            <p className={styles.description}>
+              Here are the total number of upvotes github users have commented
+              together on for this discussion:{" "}
+              <code className={styles.code}>{value}</code>
+            </p>
+
+            {commentsData && (
+              <>
+                <button
+                  className={
+                    styles.accordion + ` ${showPanel ? styles.active : ""}`
+                  }
+                  onClick={togglePanel}
+                  style={{ borderRadius: showPanel ? "" : "5px" }}
+                >
+                  All Comments
+                </button>
+                <div
+                  className={styles.panel}
+                  style={{
+                    display: showPanel ? "block" : "none",
+                  }}
+                >
+                  {commentsData.map((node, i) => {
+                    return (
+                      <React.Fragment key={i}>
+                        <p className={styles.comment}>
+                          <a href={node.author.url} target="_blank">
+                            {node.author.login}
+                          </a>
+                          : {node.body}
+                        </p>
+                        <hr />
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <p className={styles.description}>
             Looks like something went wrong. Submit an issue{" "}
@@ -56,12 +107,14 @@ export default function Home({
             )}
           </p>
         )}
+      </main>
+      <footer className={styles.footer}>
         <p className={styles.description}>
           Created by{" "}
           <a href="https://alexrabin.com" target={"_blank"}>
             Alex Rabin
           </a>
-          . The Code for this project is{" "}
+          . The code for this project is{" "}
           <a
             href="https://github.com/alexrabin/supabase-discussion-tracker"
             target={"_blank"}
@@ -70,7 +123,7 @@ export default function Home({
           </a>
           .
         </p>
-      </main>
+      </footer>
     </div>
   );
 }
@@ -91,11 +144,15 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
           discussion(number: ${discussionNumber}) {
             title
             createdAt
-            # first 10 results
+            # first 100 results
             comments(first: 100) {
               # edges.node is where the actual 'Comment' object is
               edges {
                 node {
+                  author {
+                    login
+                    url
+                  }
                   body
                 }
               }
@@ -110,10 +167,10 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       },
     }
   )) as any;
-
-  const comments = (discussion as Discussion).comments.edges.map(
-    (a) => a.node.body
+  const commentsData = (discussion as Discussion).comments.edges.map(
+    (a) => a.node
   );
+  const comments = commentsData.map((a) => a.body);
   let totalPluses = 0;
   let error = null;
   try {
@@ -140,6 +197,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     props: {
       error,
       totalPluses,
+      commentsData,
     },
   };
 };

@@ -3,7 +3,7 @@
 }
 
 .main {
-  min-height: 100vh;
+  min-height: 85vh;
   padding: 4rem 0;
   flex: 1;
   display: flex;
@@ -15,17 +15,9 @@
 .footer {
   display: flex;
   flex: 1;
-  padding: 2rem 0;
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
-}
-
-.footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
 }
 
 .title a {
@@ -51,12 +43,24 @@
 }
 
 .description {
-  margin: 4rem 0;
+  margin: 2.5rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
 }
 
 .description a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.comment {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+
+.comment a {
   color: #0070f3;
   text-decoration: none;
 }
@@ -68,14 +72,6 @@
   font-size: 1.1rem;
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
-}
-
-.grid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 800px;
 }
 
 .card {
@@ -113,11 +109,40 @@
   margin-left: 0.5rem;
 }
 
-@media (max-width: 600px) {
-  .grid {
-    width: 100%;
-    flex-direction: column;
-  }
+.accordion {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 1.25rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.accordion:after {
+  content: '\002B';
+  color: #777;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.panel {
+  width: 100%;
+  padding: 0 18px;
+  display: none;
+  background-color: rgb(247, 247, 247);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  word-wrap: break-word;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,5 +155,17 @@
   }
   .logo img {
     filter: invert(1);
+  }
+
+  .accordion {
+    background: #222;
+    color: white;
+  }
+
+  .active, .accordion:hover {
+    background: rgb(24, 24, 24);
+  }
+  .panel {
+    background: #111;
   }
 }
