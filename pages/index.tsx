@@ -185,9 +185,14 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
           .slice(1, endIndex === -1 ? undefined : endIndex)
           .replace(/\D/g, "")
           .replaceAll(" ", "");
-        count += parseInt(number);
+        const num = parseInt(number);
+        if (!Number.isNaN(num)) {
+          count += num;
+        }
       });
-      totalPluses += count;
+      if (!Number.isNaN(count)) {
+        totalPluses += count;
+      }
     }
   } catch (e) {
     error = e;
